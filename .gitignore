@@ -1,0 +1,17 @@
+# IntelliJ
+*.iml
+/.idea/
+/out/
+
+# Eclipse
+/.project
+/.classpath
+/.settings/
+
+# Maven
+/.mvn/
+/target/
+/dependency-reduced-pom.xml
+
+# vim
+.*.swp
