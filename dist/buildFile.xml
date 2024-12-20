@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<VASSAL.build.GameModule ModuleOther1="" ModuleOther2="" VassalVersion="3.7.14" description="" name="YYZ Custom Proagramming Sample" nextPieceSlotId="2" version="0.1">
-    <VASSAL.build.module.BasicCommandEncoder/>
+<VASSAL.build.GameModule ModuleOther1="" ModuleOther2="" VassalVersion="3.7.15" description="" name="YYZ Custom Proagramming Sample" nextPieceSlotId="2" version="0.1">
+    <yyz.YyzCommandEncoder/>
     <VASSAL.build.module.Documentation>
         <VASSAL.build.module.documentation.AboutScreen fileName="/images/Splash.png" title="About Module"/>
         <VASSAL.build.module.documentation.HelpFile fileName="/help/Intro.html" fileType="resource" title="Vassal Quick Start" vassalDoc="vassal"/>
@@ -53,8 +53,8 @@
     <VASSAL.build.module.PrototypesContainer/>
     <VASSAL.build.module.PieceWindow defaultWidth="0" hidden="false" hotkey="" icon="" name="Pieces" scale="1.0" text="Pieces" tooltip="Show/Hide the null window">
         <VASSAL.build.widget.BoxWidget entryName="Counters" height="0" width="0">
-            <VASSAL.build.widget.PieceSlot entryName="Red Aircraft" gpid="0" height="64" width="75">+/null/piece;;;red_counter.png;Red Aircraft/null;0;0;;0</VASSAL.build.widget.PieceSlot>
-            <VASSAL.build.widget.PieceSlot entryName="Blue Aircraft" gpid="1" height="64" width="75">+/null/piece;;;blue_counter.png;Blue Aircraft/null;0;0;;0</VASSAL.build.widget.PieceSlot>
+            <VASSAL.build.widget.PieceSlot entryName="Red Aircraft" gpid="0" height="64" width="75">+/null/AircraftSheet;null	piece;;;red_counter.png;Red Aircraft/	null;0;0;;0</VASSAL.build.widget.PieceSlot>
+            <VASSAL.build.widget.PieceSlot entryName="Blue Aircraft" gpid="1" height="64" width="75">+/null/AircraftSheet;null	piece;;;blue_counter.png;Blue Aircraft/	null;0;0;;0</VASSAL.build.widget.PieceSlot>
         </VASSAL.build.widget.BoxWidget>
     </VASSAL.build.module.PieceWindow>
     <VASSAL.build.module.Chatter/>
