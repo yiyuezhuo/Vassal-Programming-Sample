@@ -2,11 +2,9 @@ package yyz;
 
 import VASSAL.build.GameModule;
 import VASSAL.build.module.Chatter;
+import VASSAL.build.module.Map;
 import VASSAL.build.module.documentation.HelpFile;
-import VASSAL.command.ChangePiece;
-import VASSAL.command.ChangeTracker;
-import VASSAL.command.Command;
-import VASSAL.command.RemovePiece;
+import VASSAL.command.*;
 import VASSAL.configure.IntConfigurer;
 import VASSAL.counters.Decorator;
 import VASSAL.counters.GamePiece;
@@ -84,6 +82,7 @@ public class AircraftSheet extends Decorator implements MouseListener {
     private final KeyStroke fireCommand = KeyStroke.getKeyStroke(KeyEvent.VK_F, 0);
     private final KeyStroke waypointCommand = KeyStroke.getKeyStroke(KeyEvent.VK_F3, 0);
     private final KeyStroke concludeMouseCommand = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+    private final KeyStroke moveCommand = KeyStroke.getKeyStroke(KeyEvent.VK_M, 0);
 
     @Override
     protected KeyCommand[] myGetKeyCommands() {
@@ -92,7 +91,8 @@ public class AircraftSheet extends Decorator implements MouseListener {
                     new KeyCommand("Open Aircraft Sheet", openCommand, this),
                     new KeyCommand("Fire", fireCommand, this),
                     new KeyCommand("Plot Waypoint", waypointCommand, this),
-                    new KeyCommand("Conclude Plot Waypoint", concludeMouseCommand, this)
+                    new KeyCommand("Conclude Plot Waypoint", concludeMouseCommand, this),
+                    new KeyCommand("Move a step", moveCommand, this)
             };
         }
         return commands;
@@ -178,15 +178,17 @@ public class AircraftSheet extends Decorator implements MouseListener {
             }
         }else if(keyStroke.equals(concludeMouseCommand)){
             getMap().popMouseListener();
+
             if(mouseMode == MouseMode.FIRING){ // cancel firing
                 mouseMode = null;
             }else if(mouseMode == MouseMode.WAYPOINTPLOTTING){ // commit temp waypoints
+                mouseMode = null;
+
                 var changeTracker = new ChangeTracker(getOutermost(this));
 
                 waypoints.clear();
                 waypoints.addAll(tempWaypoints);
                 tempWaypoints.clear();
-                mouseMode = null;
 
                 var changeCommand = changeTracker.getChangeCommand();
                 var mod = GameModule.getGameModule();
@@ -195,9 +197,68 @@ public class AircraftSheet extends Decorator implements MouseListener {
                 c.append(changeCommand);
                 mod.sendAndLog(c);
             }
+        }else if(keyStroke.equals(moveCommand)){
+            doMove();
         }
 
         return null;
+    }
+
+    void doMove(){
+        var movement = 100.;
+        var currentPos = getPosition();
+
+        var changeTracker = new ChangeTracker(this); // waypoints may update
+
+        while(movement > 0 && !waypoints.isEmpty()){
+
+            var nextDestinatePos = waypoints.get(0);
+            var dist = currentPos.distance(nextDestinatePos);
+            if(movement >= dist){
+                movement -= dist;
+                waypoints.remove(0);
+                currentPos = nextDestinatePos;
+            }else{
+                var p = movement / dist;
+                var x = currentPos.x * (1-p) + nextDestinatePos.x * p;
+                var y = currentPos.y * (1-p) + nextDestinatePos.y * p;
+                currentPos = new Point((int)Math.floor(x), (int)Math.floor(y));
+
+                movement = 0;
+            }
+        }
+
+        var changePieceCommand = changeTracker.getChangeCommand();
+
+        var mod = GameModule.getGameModule();
+
+        var c = new Chatter.DisplayText(mod.getChatter(), "Movement");
+        c.append(movePiece(this, currentPos));
+        c.execute();
+        c.append(changePieceCommand);
+
+        mod.sendAndLog(c);
+    }
+
+    Command movePiece(GamePiece gp, Point dest)
+    {
+        // Is the piece on map?
+        final Map map = gp.getMap();
+        if(map == null)
+        {
+            return null;
+        }
+
+        // Prepare the piece for move, writing "old location" properties, marking moved, and unlinking from any deck
+        Command c = gp.prepareMove(new NullCommand(), true);
+
+        // Move the piece
+        c = c.append(map.placeOrMerge(Decorator.getOutermost(gp), dest));
+
+        // Post move action -- find a new mat if needed, and apply any afterburner apply-on-move key
+        c = gp.finishMove(c, true, true, true);
+
+        return c;
     }
 
     @Override
