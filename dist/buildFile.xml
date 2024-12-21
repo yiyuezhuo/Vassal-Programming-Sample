@@ -5,7 +5,11 @@
         <VASSAL.build.module.documentation.AboutScreen fileName="/images/Splash.png" title="About Module"/>
         <VASSAL.build.module.documentation.HelpFile fileName="/help/Intro.html" fileType="resource" title="Vassal Quick Start" vassalDoc="vassal"/>
     </VASSAL.build.module.Documentation>
-    <VASSAL.build.module.PlayerRoster buttonKeyStroke="" buttonText="Retire" buttonToolTip="Switch sides, become an observer, or allow another player to take your side in this game"/>
+    <VASSAL.build.module.PlayerRoster buttonIcon="" buttonKeyStroke="" buttonText="Retire" buttonToolTip="Switch sides, become an observer, or allow another player to take your side in this game">
+        <entry>Red</entry>
+        <entry>Blue</entry>
+        <entry>White</entry>
+    </VASSAL.build.module.PlayerRoster>
     <VASSAL.build.module.GlobalOptions autoReport="Always" chatterHTMLSupport="Never" disablePieceIndexing="false" hotKeysOnClosedWindows="Never" inventoryForAll="Always" nonOwnerUnmaskable="Never" playerIdFormat="$PlayerName$" promptString="Opponents can unmask my pieces" purgeBlankPropertyPrompts="true" sendToLocationMoveTrails="Never" storeLeadingZeroIntegersAsStrings="false">
         <option name="newHotKey">87,520</option>
         <option name="endHotKey">87,585</option>
@@ -53,8 +57,8 @@
     <VASSAL.build.module.PrototypesContainer/>
     <VASSAL.build.module.PieceWindow defaultWidth="0" hidden="false" hotkey="" icon="" name="Pieces" scale="1.0" text="Pieces" tooltip="Show/Hide the null window">
         <VASSAL.build.widget.BoxWidget entryName="Counters" height="0" width="0">
-            <VASSAL.build.widget.PieceSlot entryName="Red Aircraft" gpid="0" height="64" width="75">+/null/AircraftSheet;null	piece;;;red_counter.png;Red Aircraft/	null;0;0;;0</VASSAL.build.widget.PieceSlot>
-            <VASSAL.build.widget.PieceSlot entryName="Blue Aircraft" gpid="1" height="64" width="75">+/null/AircraftSheet;null	piece;;;blue_counter.png;Blue Aircraft/	null;0;0;;0</VASSAL.build.widget.PieceSlot>
+            <VASSAL.build.widget.PieceSlot entryName="Red Aircraft" gpid="0" height="67" width="100">+/null/AircraftSheet;null	mark;Side\	hide;73,130;Invisible;;sides:Red:White;0.30000001192092896;;false\\	piece;;;red_counter.png;Red Aircraft/0;0	Red\	null\\	null;0;5;;0</VASSAL.build.widget.PieceSlot>
+            <VASSAL.build.widget.PieceSlot entryName="Blue Aircraft" gpid="1" height="64" width="75">+/null/AircraftSheet;null	mark;Side\	hide;73,130;Invisible;;sides:Blue:White;0.30000001192092896;;false\\	piece;;;blue_counter.png;Blue Aircraft/0;0	Blue\	null\\	null;0;0;;0</VASSAL.build.widget.PieceSlot>
         </VASSAL.build.widget.BoxWidget>
     </VASSAL.build.module.PieceWindow>
     <VASSAL.build.module.Chatter/>

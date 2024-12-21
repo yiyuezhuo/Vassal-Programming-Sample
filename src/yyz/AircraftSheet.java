@@ -6,10 +6,7 @@ import VASSAL.build.module.Map;
 import VASSAL.build.module.documentation.HelpFile;
 import VASSAL.command.*;
 import VASSAL.configure.IntConfigurer;
-import VASSAL.counters.Decorator;
-import VASSAL.counters.GamePiece;
-import VASSAL.counters.KeyCommand;
-import VASSAL.counters.PieceFinder;
+import VASSAL.counters.*;
 import VASSAL.tools.SequenceEncoder;
 
 import javax.swing.*;
@@ -238,6 +235,40 @@ public class AircraftSheet extends Decorator implements MouseListener {
         c.append(changePieceCommand);
 
         mod.sendAndLog(c);
+
+        tryDetectTargets();
+    }
+
+    void tryDetectTargets(){
+        var mod = GameModule.getGameModule();
+
+        // Fog-of-War processing
+        var mySide = getProperty("Side"); // Side is assigned from a Marker
+        var myPosition = getPosition();
+        if(mySide != null){
+            for(var p : mod.getGameState().getAllPieces()){ // getMap().getAllPieces if you want to get top stacks only
+                var target = Decorator.getDecorator(p, AircraftSheet.class);
+                if(target != null && target != this){
+                    var targetSide = p.getProperty("Side");
+                    if(!mySide.equals(targetSide)){
+                        var targetPos = p.getPosition();
+                        var detDist = myPosition.distance(targetPos);
+                        if(detDist <= mediumDetectionRange){
+                            var hiddenBy = p.getProperty(Hideable.HIDDEN_BY); // Hideable is the internal name of Invisible, check Vassal Source code for detail
+                            if(hiddenBy != null){
+                                var c = new Chatter.DisplayText(mod.getChatter(), "New Contact!");
+                                c.execute();
+
+                                var changeTracker = new ChangeTracker(p);
+                                p.setProperty(Hideable.HIDDEN_BY, null);
+                                c.append(changeTracker.getChangeCommand());
+                                mod.sendAndLog(c);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     Command movePiece(GamePiece gp, Point dest)
@@ -279,11 +310,15 @@ public class AircraftSheet extends Decorator implements MouseListener {
             var g2d = (Graphics2D)g;
             g2d.setColor(Color.BLUE);
 
-            var r = mediumDetectionRange;
-            var xs = x - r / 2;
-            var ys = y - r / 2;
+            // Now mediumDetectionRange is treated as map coordinate instead of drawing coordinate.
+            // var r = mediumDetectionRange;
+            final double os_scale = g2d.getDeviceConfiguration().getDefaultTransform().getScaleX();
+            var r = getMap().mapToDrawing(mediumDetectionRange, os_scale);
 
-            g2d.drawOval(xs, ys, r, r);
+            var xs = x - r;
+            var ys = y - r;
+
+            g2d.drawOval(xs, ys, 2 * r, 2 * r);
         }
 
         if(isSelected()){
